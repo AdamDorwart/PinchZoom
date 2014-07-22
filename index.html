@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="assets/style.css">
+    <title>Hammer.js</title>
+
+    <style>
+
+        html, body {
+            overflow: hidden;
+            margin: 0;
+        }
+
+        .animate {
+            -webkit-transition: all .3s;
+            -moz-transition: all .3s;
+            transition: all .3s;
+        }
+
+        #hit {
+            padding: 10px;
+        }
+
+        #log {
+            position: absolute;
+            padding: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="log"></div>
+<div id="hit"style="background: #42d692; width: 150px; height: 150px;"></div>
+
+
+    <script src="./hammer.js/hammer.js"></script>
+    <script src="./pinchZoom.js"></script>
+</body>
+</html>
