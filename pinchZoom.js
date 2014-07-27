@@ -101,6 +101,7 @@ function updateTransitionEnd() {
         nextSwipeItem.style["-o-transition"] = "";
         nextSwipeItem.style["transition"] = "";
     }
+    requestMade = false;
 }
 
 function transitionEnd() {
@@ -141,14 +142,14 @@ function setup( ) {
     hammer = new Hammer.Manager(container);
 
     hammer.add(new Hammer.Pan({ threshold: 0, pointers: 0 }));
-    //hammer.add(new Hammer.Swipe()).recognizeWith(hammer.get('pan'));
+    hammer.add(new Hammer.Swipe()).recognizeWith(hammer.get('pan'));
     //hammer.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith(hammer.get('pan'));
 
     //hammer.add(new Hammer.Tap({ event: 'doubletap', taps: 2 }));
     //hammer.add(new Hammer.Tap()).recognizeWith('doubletap');
 
     hammer.on("pan", onPan);
-    //hammer.on("swipe", onSwipe);
+    hammer.on("swipe", onSwipe);
     //hammer.on("pinch", onPinch);
     //hammer.on("tap", onTap);
     //hammer.on("doubletap", onDoubleTap);
@@ -218,7 +219,7 @@ function updateTransform() {
     requestMade = false;
 }
 
-function requestUpdate( force, callback) {
+function requestUpdate( force, uniqueCallback) {
     if ((!requestMade && !animationInProgress) || force) {
         if ( typeof uniqueCallback === "undefined"){
             requestAnimationFrame( updateTransform);
