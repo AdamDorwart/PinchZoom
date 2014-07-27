@@ -223,6 +223,11 @@ function updateTransform() {
     requestMade = false;
 }
 
+//Let's try this...
+function requestAnimationFrame(callback) {
+    window.setTimeout(callback, 1000 / 60);
+};
+
 function requestUpdate( force, uniqueCallback) {
     if ((!requestMade && !animationInProgress) || force) {
         if ( typeof uniqueCallback === "undefined"){
