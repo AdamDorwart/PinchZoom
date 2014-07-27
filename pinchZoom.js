@@ -34,8 +34,6 @@ var container = document.getElementById("SwipeSet");
 
 
 function onPan( event) {
-    //var unsanitizedOffsetX = transform.offset.x + event.deltaX;
-    //transform.offset.x = Math.min( Math.max(unsanitizedOffsetX, 0), itemWidth);
 
     offset.x += event.deltaX - lastTouch.x;
     lastTouch.x = event.deltaX;
@@ -88,22 +86,22 @@ function animateTransition() {
 
 function updateTransitionEnd() {
     if ( prevSwipeItem !== null) {
-        prevSwipeItem.style["-webkit-transition"] = "";
+        /*prevSwipeItem.style["-webkit-transition"] = "";
         prevSwipeItem.style["-moz-transition"] = "";
         prevSwipeItem.style["-ms-transition"] = "";
-        prevSwipeItem.style["-o-transition"] = "";
+        prevSwipeItem.style["-o-transition"] = "";*/
         prevSwipeItem.style["transition"] = "";
     }
-    curSwipeItem.style["-webkit-transition"] = "";
+    /*curSwipeItem.style["-webkit-transition"] = "";
     curSwipeItem.style["-moz-transition"] = "";
     curSwipeItem.style["-ms-transition"] = "";
-    curSwipeItem.style["-o-transition"] = "";
+    curSwipeItem.style["-o-transition"] = "";*/
     curSwipeItem.style["transition"] = "";
     if ( nextSwipeItem !== null) {
-        nextSwipeItem.style["-webkit-transition"] = "";
+        /*nextSwipeItem.style["-webkit-transition"] = "";
         nextSwipeItem.style["-moz-transition"] = "";
         nextSwipeItem.style["-ms-transition"] = "";
-        nextSwipeItem.style["-o-transition"] = "";
+        nextSwipeItem.style["-o-transition"] = "";*/
         nextSwipeItem.style["transition"] = "";
     }
     requestMade = false;
@@ -222,11 +220,6 @@ function updateTransform() {
 
     requestMade = false;
 }
-
-//Let's try this...
-function requestAnimationFrame(callback) {
-    window.setTimeout(callback, 1000 / 60);
-};
 
 function requestUpdate( force, uniqueCallback) {
     if ((!requestMade && !animationInProgress) || force) {
