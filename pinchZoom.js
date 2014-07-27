@@ -1,4 +1,6 @@
 var ANIMATION = "transform 300ms ease";
+var PANTHRESHOLD = .5;
+var VELTHRESHOLD = 0.65;
 
 var itemWidth = 0;
 var itemHeight = 0;
@@ -30,26 +32,29 @@ var nextSwipeItem = swipeItems[curItem+1];
 var hammer;
 var container = document.getElementById("SwipeSet");
 
+
 function onPan( event) {
     //var unsanitizedOffsetX = transform.offset.x + event.deltaX;
     //transform.offset.x = Math.min( Math.max(unsanitizedOffsetX, 0), itemWidth);
+
     offset.x += event.deltaX - lastTouch.x;
     lastTouch.x = event.deltaX;
     requestUpdate();
 }
 
 function onPanEnd( event) {
-    offset.x = 0;
     lastTouch.x = 0;
-    animateTransition();
-}
-
-function onSwipe( event) {
-    if ( event.direction & Hammer.DIRECTION_LEFT && curItem < totalItems - 1) {
-        requestNextItem();
-    } else if (event.direction & Hammer.DIRECTION_RIGHT && curItem > 0) {
-        requestPrevItem();
+    if ( Math.abs( event.deltaX) > (PANTHRESHOLD*itemWidth) || Math.abs( event.velocityX) > VELTHRESHOLD) {
+        if ( event.direction & Hammer.DIRECTION_LEFT) {
+            requestNextItem();
+            return;
+        } else if (event.direction & Hammer.DIRECTION_RIGHT) {
+            requestPrevItem();
+            return;
+        }
     }
+    offset.x = 0;
+    animateTransition();
 }
 
 function onPinch( event) {
@@ -60,25 +65,25 @@ function requestNextItem() {
     if ( curItem < totalItems - 1) {
         curItem++;
         offset.x = -itemWidth;
-        animateTransition();
+    } else {
+        offset.x = 0;
     }
+    animateTransition();
 }
 
 function requestPrevItem() {
     if ( curItem > 0) {
         curItem--;
         offset.x = itemWidth;
-        animateTransition();
+    } else {
+        offset.x = 0;
     }
+    animateTransition();
 }
 
 function animateTransition() {
-    if (animationInProgress) {
-        transitionEnd();
-    } else {
-        animationInProgress = true;
-        requestUpdate( true);
-    }
+    animationInProgress = true;
+    requestUpdate( true);
 }
 
 function updateTransitionEnd() {
@@ -105,11 +110,12 @@ function updateTransitionEnd() {
 }
 
 function transitionEnd() {
-    requestUpdate( true, updateTransitionEnd);
+    updateTransitionEnd();
     if ( curSwipeItem !== swipeItems[curItem]) {
         prevSwipeItem = (curItem > 0) ? swipeItems[curItem-1] : null;
         curSwipeItem = swipeItems[curItem];
         nextSwipeItem = (curItem < totalItems - 1) ? swipeItems[curItem+1] : null;
+        offset.x = 0;
     }
     animationInProgress = false;
 }
@@ -117,6 +123,8 @@ function transitionEnd() {
 function resize() {
     itemWidth = container.offsetWidth;
     itemHeight = container.offsetHeight;
+
+    container.style.width = itemWidth * totalItems;
 
     for (var i = 0; i < swipeItems.length; i++) {
         var transform;
@@ -142,14 +150,12 @@ function setup( ) {
     hammer = new Hammer.Manager(container);
 
     hammer.add(new Hammer.Pan({ threshold: 0, pointers: 0 }));
-    hammer.add(new Hammer.Swipe()).recognizeWith(hammer.get('pan'));
     //hammer.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith(hammer.get('pan'));
 
     //hammer.add(new Hammer.Tap({ event: 'doubletap', taps: 2 }));
     //hammer.add(new Hammer.Tap()).recognizeWith('doubletap');
 
     hammer.on("pan", onPan);
-    hammer.on("swipe", onSwipe);
     //hammer.on("pinch", onPinch);
     //hammer.on("tap", onTap);
     //hammer.on("doubletap", onDoubleTap);
@@ -159,7 +165,7 @@ function setup( ) {
     container.addEventListener( "oTransitionEnd", transitionEnd);
     container.addEventListener( "transitionend", transitionEnd);
     container.addEventListener( "msTransitionEnd", transitionEnd);
-    container.addEventListener( "resize", resize);
+    window.addEventListener( "resize", resize);
 
     resize();
 }
