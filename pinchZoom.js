@@ -1,127 +1,232 @@
+var ANIMATION = "transform 300ms ease";
 
-var reqAnimationFrame = (function () {
-    return window[Hammer.prefixed(window, 'requestAnimationFrame')] || function (callback) {
-        window.setTimeout(callback, 1000 / 60);
-    };
-})();
+var itemWidth = 0;
+var itemHeight = 0;
+var marginSize = 0;
+var curItem = 0;
+var totalItems = 0;
 
-var log = document.querySelector("#log");
-var el = document.querySelector("#hit");
+var lastTouch = {
+    x: 0,
+    y: 0
+};
 
-var START_X = Math.round((window.innerWidth - el.offsetWidth) / 2);
-var START_Y = Math.round((window.innerHeight - el.offsetHeight) / 2);
+var animationInProgress = false;
+var requestMade = false;
+var itemWidth = 0;
+var itemHeight = 0;
+var offset = {
+    x: 0,
+    y: 0
+}
 
-var ticking = false;
-var transform;
+var swipeItems = document.getElementsByClassName("swipe-item");
+totalItems = swipeItems.length;
 
-var mc = new Hammer.Manager(el);
+var prevSwipeItem = null;
+var curSwipeItem = swipeItems[curItem];
+var nextSwipeItem = swipeItems[curItem+1];
 
-mc.add(new Hammer.Pan({ threshold: 0, pointers: 0 }));
+var hammer;
+var container = document.getElementById("SwipeSet");
 
-mc.add(new Hammer.Swipe()).recognizeWith(mc.get('pan'));
-mc.add(new Hammer.Rotate({ threshold: 0 })).recognizeWith(mc.get('pan'));
-mc.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith([mc.get('pan'), mc.get('rotate')]);
+function onPan( event) {
+    //var unsanitizedOffsetX = transform.offset.x + event.deltaX;
+    //transform.offset.x = Math.min( Math.max(unsanitizedOffsetX, 0), itemWidth);
+    offset.x += event.deltaX - lastTouch.x;
+    lastTouch.x = event.deltaX;
+    requestUpdate();
+}
 
-mc.add(new Hammer.Tap({ event: 'doubletap', taps: 2 }));
-mc.add(new Hammer.Tap()).recognizeWith('doubletap');
+function onPanEnd( event) {
+    offset.x = 0;
+    lastTouch.x = 0;
+    animateTransition();
+}
 
-mc.on("pan", onPan);
-mc.on("swipe", onSwipe);
-mc.on("rotate", onRotate);
-mc.on("pinch", onPinch);
-mc.on("tap", onTap);
-mc.on("doubletap", onDoubleTap);
-
-mc.on("panend rotateend pinchend pancancel rotatecancel pinchcancel", resetElement);
-
-
-function resetElement() {
-    transform = {
-        translate: { x: START_X, y: START_Y },
-        scale: 1,
-        rotate: 0
-    };
-    el.className = 'animate';
-
-    requestElementUpdate();
-
-    if (log.textContent.length > 2000) {
-        log.textContent = log.textContent.substring(0, 2000) + "...";
+function onSwipe( event) {
+    if ( event.direction & Hammer.DIRECTION_LEFT && curItem < totalItems - 1) {
+        requestNextItem();
+    } else if (event.direction & Hammer.DIRECTION_RIGHT && curItem > 0) {
+        requestPrevItem();
     }
 }
 
-function updateElementTransform() {
-    var value = [
-        'translate3d(' + transform.translate.x + 'px, ' + transform.translate.y + 'px, 0)',
-        'scale(' + transform.scale + ', ' + transform.scale + ')',
-        'rotate(' + transform.rotate + 'deg)'];
+function onPinch( event) {
 
-    value = value.join(" ");
-    el.textContent = value;
-    el.style.webkitTransform = value;
-    el.style.mozTransform = value;
-    el.style.transform = value;
-    ticking = false;
 }
 
-function requestElementUpdate() {
-    if(!ticking) {
-        reqAnimationFrame(updateElementTransform);
-        ticking = true;
+function requestNextItem() {
+    if ( curItem < totalItems - 1) {
+        curItem++;
+        offset.x = -itemWidth;
+        animateTransition();
     }
 }
 
-function logEvent(str) {
-    //log.insertBefore(document.createTextNode(str +"\n"), log.firstChild);
+function requestPrevItem() {
+    if ( curItem > 0) {
+        curItem--;
+        offset.x = itemWidth;
+        animateTransition();
+    }
 }
 
-function onPan(ev) {
-    el.className = '';
-    transform.translate = {
-        x: START_X + ev.deltaX,
-        y: START_Y + ev.deltaY
-    };
-    requestElementUpdate();
-    logEvent(ev.type);
+function animateTransition() {
+    if (animationInProgress) {
+        transitionEnd();
+    } else {
+        animationInProgress = true;
+        requestUpdate( true);
+    }
 }
 
-function onSwipe(ev) {
-    el.style.background = 'white';
-    setTimeout(function () {
-        el.style.background = '#42d692';
-        requestElementUpdate();
-    }, 300);
-    requestElementUpdate();
-    logEvent(ev.type);
+function updateTransitionEnd() {
+    if ( prevSwipeItem !== null) {
+        prevSwipeItem.style["-webkit-transition"] = "";
+        prevSwipeItem.style["-moz-transition"] = "";
+        prevSwipeItem.style["-ms-transition"] = "";
+        prevSwipeItem.style["-o-transition"] = "";
+        prevSwipeItem.style["transition"] = "";
+    }
+    curSwipeItem.style["-webkit-transition"] = "";
+    curSwipeItem.style["-moz-transition"] = "";
+    curSwipeItem.style["-ms-transition"] = "";
+    curSwipeItem.style["-o-transition"] = "";
+    curSwipeItem.style["transition"] = "";
+    if ( nextSwipeItem !== null) {
+        nextSwipeItem.style["-webkit-transition"] = "";
+        nextSwipeItem.style["-moz-transition"] = "";
+        nextSwipeItem.style["-ms-transition"] = "";
+        nextSwipeItem.style["-o-transition"] = "";
+        nextSwipeItem.style["transition"] = "";
+    }
 }
 
-function onPinch(ev) {
-    el.className = '';
-    transform.scale = ev.scale;
-    requestElementUpdate();
-    logEvent(ev.type);
-}
-function onRotate(ev) {
-    el.className = '';
-    transform.rotate = ev.rotation;
-    requestElementUpdate();
-    logEvent(ev.type);
+function transitionEnd() {
+    requestUpdate( true, updateTransitionEnd);
+    if ( curSwipeItem !== swipeItems[curItem]) {
+        prevSwipeItem = (curItem > 0) ? swipeItems[curItem-1] : null;
+        curSwipeItem = swipeItems[curItem];
+        nextSwipeItem = (curItem < totalItems - 1) ? swipeItems[curItem+1] : null;
+    }
+    animationInProgress = false;
 }
 
-function onTap(ev) {
-    el.style.borderRadius = '100%';
-    setTimeout(function () {
-        el.style.borderRadius = '0';
-        requestElementUpdate();
-    }, 100);
-    requestElementUpdate();
-    logEvent(ev.type);
+function resize() {
+    itemWidth = container.offsetWidth;
+    itemHeight = container.offsetHeight;
+
+    for (var i = 0; i < swipeItems.length; i++) {
+        var transform;
+        if ( i < curItem ) {
+            transform = "translateX(" + (-itemWidth) + "px) translateY(" + 0 + "px)";
+        } else if ( i > curItem) {
+            transform = "translateX(" + (itemWidth) + "px) translateY(" + 0 + "px)";
+        } else {
+            transform = "translateX(" + 0 + "px) translateY(" + 0 + "px)";
+        }
+        swipeItems[i].style.webkitTransform = transform;
+        swipeItems[i].style.mozTransform = transform;
+        swipeItems[i].style.transform = transform;
+        swipeItems[i].style.width = itemWidth;
+        swipeItems[i].style.height = itemHeight;
+    }
+    requestUpdate();
 }
 
-function onDoubleTap(ev) {
-    transform.scale = transform.scale === 1 ? 1.5 : 1;
-    requestElementUpdate();
-    logEvent(ev.type);
+
+function setup( ) {
+
+    hammer = new Hammer.Manager(container);
+
+    hammer.add(new Hammer.Pan({ threshold: 0, pointers: 0 }));
+    //hammer.add(new Hammer.Swipe()).recognizeWith(hammer.get('pan'));
+    //hammer.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith(hammer.get('pan'));
+
+    //hammer.add(new Hammer.Tap({ event: 'doubletap', taps: 2 }));
+    //hammer.add(new Hammer.Tap()).recognizeWith('doubletap');
+
+    hammer.on("pan", onPan);
+    //hammer.on("swipe", onSwipe);
+    //hammer.on("pinch", onPinch);
+    //hammer.on("tap", onTap);
+    //hammer.on("doubletap", onDoubleTap);
+    hammer.on("panend pancancel", onPanEnd);
+
+    container.addEventListener( "webkitTransitionEnd", transitionEnd);
+    container.addEventListener( "oTransitionEnd", transitionEnd);
+    container.addEventListener( "transitionend", transitionEnd);
+    container.addEventListener( "msTransitionEnd", transitionEnd);
+    container.addEventListener( "resize", resize);
+
+    resize();
 }
 
-resetElement();
+function updateTransform() {
+    var styleValue;
+
+    if ( prevSwipeItem !== null) {
+        styleValue = "translateX(" + (offset.x - itemWidth) + "px) translateY(" + offset.y + "px)";
+        prevSwipeItem.style["-webkit-transform"] = styleValue;
+        prevSwipeItem.style["-moz-transform"] = styleValue;
+        prevSwipeItem.style["-ms-transform"] = styleValue;
+        prevSwipeItem.style["-o-transform"] = styleValue;
+        prevSwipeItem.style["transform"] = styleValue;
+        if ( animationInProgress) {
+            styleValue = ANIMATION;
+            prevSwipeItem.style["-webkit-transition"] = "-webkit-" + styleValue;
+            prevSwipeItem.style["-moz-transition"] = "-moz-" + styleValue;
+            prevSwipeItem.style["-ms-transition"] = "-ms-" + styleValue;
+            prevSwipeItem.style["-o-transition"] = "-o-" + styleValue;
+            prevSwipeItem.style["transition"] = styleValue;
+        }
+    }
+
+    styleValue = "translateX(" + offset.x + "px) translateY(" + offset.y + "px)";
+    curSwipeItem.style["-webkit-transform"] = styleValue;
+    curSwipeItem.style["-moz-transform"] = styleValue;
+    curSwipeItem.style["-ms-transform"] = styleValue;
+    curSwipeItem.style["-o-transform"] = styleValue;
+    curSwipeItem.style["transform"] = styleValue;
+    if ( animationInProgress) {
+        styleValue = ANIMATION;
+        curSwipeItem.style["-webkit-transition"] = "-webkit-" + styleValue;
+        curSwipeItem.style["-moz-transition"] = "-moz-" + styleValue;
+        curSwipeItem.style["-ms-transition"] = "-ms-" + styleValue;
+        curSwipeItem.style["-o-transition"] = "-o-" + styleValue;
+        curSwipeItem.style["transition"] = styleValue;
+    }
+
+    if ( nextSwipeItem !== null) {
+        styleValue = "translateX(" + (offset.x + itemWidth) + "px) translateY(" + offset.y + "px)";
+        nextSwipeItem.style["-webkit-transform"] = styleValue;
+        nextSwipeItem.style["-moz-transform"] = styleValue;
+        nextSwipeItem.style["-ms-transform"] = styleValue;
+        nextSwipeItem.style["-o-transform"] = styleValue;
+        nextSwipeItem.style["transform"] = styleValue;
+        if ( animationInProgress) {
+            styleValue = ANIMATION;
+            nextSwipeItem.style["-webkit-transition"] = "-webkit-" + styleValue;
+            nextSwipeItem.style["-moz-transition"] = "-moz-" + styleValue;
+            nextSwipeItem.style["-ms-transition"] = "-ms-" + styleValue;
+            nextSwipeItem.style["-o-transition"] = "-o-" + styleValue;
+            nextSwipeItem.style["transition"] = styleValue;
+        }
+    }
+
+    requestMade = false;
+}
+
+function requestUpdate( force, callback) {
+    if ((!requestMade && !animationInProgress) || force) {
+        if ( typeof uniqueCallback === "undefined"){
+            requestAnimationFrame( updateTransform);
+        } else {
+            requestAnimationFrame( uniqueCallback);
+        }
+        requestMade = true;
+    }
+}
+
+setup();
