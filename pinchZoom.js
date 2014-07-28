@@ -10,7 +10,8 @@ var totalItems = 0;
 
 var lastTouch = {
     x: 0,
-    y: 0
+    y: 0,
+    scale: 1
 };
 
 var animationInProgress = false;
@@ -21,6 +22,8 @@ var offset = {
     x: 0,
     y: 0
 }
+var scale = 1;
+var zoomMode = false;
 
 var swipeItems = document.getElementsByClassName("swipe-item");
 totalItems = swipeItems.length;
@@ -34,32 +37,58 @@ var container = document.getElementById("SwipeSet");
 
 
 function onPan( event) {
-    setTimeout( function( event){
-        offset.x += event.deltaX - lastTouch.x;
-        lastTouch.x = event.deltaX;
-        requestUpdate()
-    },0, event);
+    if (!zoomMode) {
+        setTimeout( function( event){
+            offset.x += event.deltaX - lastTouch.x;
+            lastTouch.x = event.deltaX;
+            requestUpdate()
+        },0, event);
+    }
 }
 
 function onPanEnd( event) {
-    setTimeout( function(event) {
-        lastTouch.x = 0;
-        if ( Math.abs( event.deltaX) > (PANTHRESHOLD*itemWidth) || Math.abs( event.velocityX) > VELTHRESHOLD) {
-            if ( event.direction & Hammer.DIRECTION_LEFT) {
-                requestNextItem();
-                return;
-            } else if (event.direction & Hammer.DIRECTION_RIGHT) {
-                requestPrevItem();
-                return;
+    if (!zoomMode) {
+        setTimeout( function(event) {
+            lastTouch.x = 0;
+            if ( Math.abs( event.deltaX) > (PANTHRESHOLD*itemWidth) || Math.abs( event.velocityX) > VELTHRESHOLD) {
+                if ( event.direction & Hammer.DIRECTION_LEFT) {
+                    requestNextItem();
+                    return;
+                } else if (event.direction & Hammer.DIRECTION_RIGHT) {
+                    requestPrevItem();
+                    return;
+                }
             }
-        }
-        offset.x = 0;
-        animateTransition();
-    },0,event);
+            offset.x = 0;
+            animateTransition();
+        },0,event);
+    }
 }
 
-function onPinch( event) {
 
+function onPinch( event) {
+    if (!zoomMode) {
+        zoomMode = true;
+    }
+    setTimeout( function(event) {
+        var scaleFactor = event.scale / lastTouch.scale;
+        lastTouch.scale = event.scale;
+
+        scale *= scaleFactor;
+        offset.x += (scaleFactor - 1) * (event.center.x + offset.x) + (event.deltaX - lastTouch.x);
+        offset.y += (scaleFactor - 1) * (event.center.y + offset.y) + (event.deltaY - lastTouch.y);
+
+        lastTouch.x = event.deltaX;
+        lastTouch.y = event.deltaY;
+    },0,event);
+
+}
+
+function onPinchEnd( event) {
+    zoomMode = false;
+    lastTouch.x = 0;
+    lastTouch.y = 0;
+    lastTouch.scale = 1;
 }
 
 function requestNextItem() {
@@ -174,13 +203,13 @@ function setup( ) {
     hammer = new Hammer.Manager(container, {touchAction: "pan-y"});
 
     hammer.add(new Hammer.Pan({ threshold: 0, pointers: 0 }));
-    //hammer.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith(hammer.get('pan'));
+    hammer.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith(hammer.get('pan'));
 
     //hammer.add(new Hammer.Tap({ event: 'doubletap', taps: 2 }));
     //hammer.add(new Hammer.Tap()).recognizeWith('doubletap');
 
     hammer.on("pan", onPan);
-    //hammer.on("pinch", onPinch);
+    hammer.on("pinch", onPinch);
     //hammer.on("tap", onTap);
     //hammer.on("doubletap", onDoubleTap);
     hammer.on("panend pancancel", onPanEnd);
