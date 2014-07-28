@@ -186,10 +186,10 @@ function resize() {
         } else if ( i > curItem) {
             transform = "translateX(" + (itemWidth) + "px) translateY(" + 0 + "px)";
         } else {
-            transform = "translateX(" + 0 + "px) translateY(" + 0 + "px)";
+            transform = "translateX(" + 0 + "px) translateY(" + 0 + "px) scale(" + scale + "," + scale + ")";
         }
-        swipeItems[i].style.webkitTransform = transform;
-        swipeItems[i].style.mozTransform = transform;
+        //swipeItems[i].style.webkitTransform = transform;
+        //swipeItems[i].style.mozTransform = transform;
         swipeItems[i].style.transform = transform;
         swipeItems[i].style.width = itemWidth;
         swipeItems[i].style.height = itemHeight;
@@ -213,6 +213,7 @@ function setup( ) {
     //hammer.on("tap", onTap);
     //hammer.on("doubletap", onDoubleTap);
     hammer.on("panend pancancel", onPanEnd);
+    hammer.on("pinchend pinchcancel", onPinchEnd);
 
     container.addEventListener( "webkitTransitionEnd", transitionEnd);
     container.addEventListener( "oTransitionEnd", transitionEnd);
@@ -239,7 +240,7 @@ function updateTransform() {
         prevSwipeItem.style.transform = styleValue;
     }
 
-    styleValue = "translateX(" + offset.x + "px) translateY(" + offset.y + "px)";
+    styleValue = "translateX(" + offset.x + "px) translateY(" + offset.y + "px) scale(" + scale + "," + scale + ")";
     /*curSwipeItem.style["-webkit-transform"] = styleValue;
     curSwipeItem.style["-moz-transform"] = styleValue;
     curSwipeItem.style["-ms-transform"] = styleValue;
