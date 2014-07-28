@@ -80,8 +80,33 @@ function requestPrevItem() {
 }
 
 function animateTransition() {
-    animationInProgress = true;
-    requestUpdate( true);
+    updateTransition();
+    if (!animationInProgress) {
+        animationInProgress = true;
+        requestUpdate();
+    }
+}
+
+function updateTransition() {
+    if ( prevSwipeItem !== null) {
+        /*prevSwipeItem.style["-webkit-transition"] = "";
+        prevSwipeItem.style["-moz-transition"] = "";
+        prevSwipeItem.style["-ms-transition"] = "";
+        prevSwipeItem.style["-o-transition"] = "";*/
+        prevSwipeItem.style.transition = ANIMATION;
+    }
+    /*curSwipeItem.style["-webkit-transition"] = "";
+    curSwipeItem.style["-moz-transition"] = "";
+    curSwipeItem.style["-ms-transition"] = "";
+    curSwipeItem.style["-o-transition"] = "";*/
+    curSwipeItem.style.transition = ANIMATION;
+    if ( nextSwipeItem !== null) {
+        /*nextSwipeItem.style["-webkit-transition"] = "";
+        nextSwipeItem.style["-moz-transition"] = "";
+        nextSwipeItem.style["-ms-transition"] = "";
+        nextSwipeItem.style["-o-transition"] = "";*/
+        nextSwipeItem.style.transition = ANIMATION;
+    }
 }
 
 function updateTransitionEnd() {
@@ -90,21 +115,20 @@ function updateTransitionEnd() {
         prevSwipeItem.style["-moz-transition"] = "";
         prevSwipeItem.style["-ms-transition"] = "";
         prevSwipeItem.style["-o-transition"] = "";*/
-        prevSwipeItem.style["transition"] = "";
+        prevSwipeItem.style.transition = "";
     }
     /*curSwipeItem.style["-webkit-transition"] = "";
     curSwipeItem.style["-moz-transition"] = "";
     curSwipeItem.style["-ms-transition"] = "";
     curSwipeItem.style["-o-transition"] = "";*/
-    curSwipeItem.style["transition"] = "";
+    curSwipeItem.style.transition = "";
     if ( nextSwipeItem !== null) {
         /*nextSwipeItem.style["-webkit-transition"] = "";
         nextSwipeItem.style["-moz-transition"] = "";
         nextSwipeItem.style["-ms-transition"] = "";
         nextSwipeItem.style["-o-transition"] = "";*/
-        nextSwipeItem.style["transition"] = "";
+        nextSwipeItem.style.transition = "";
     }
-    requestMade = false;
 }
 
 function transitionEnd() {
@@ -116,6 +140,7 @@ function transitionEnd() {
         offset.x = 0;
     }
     animationInProgress = false;
+    requestUpdate();
 }
 
 function resize() {
@@ -162,6 +187,10 @@ function setup( ) {
     container.addEventListener( "transitionend", transitionEnd);
     container.addEventListener( "msTransitionEnd", transitionEnd);
     window.addEventListener( "resize", resize);
+    // Hides mobile browser's address bar when page is done loading.
+    window.addEventListener('load', function(e) {
+        setTimeout(function() { window.scrollTo(0, 1); }, 1);
+    }, false);
 
     resize();
 }
@@ -175,15 +204,7 @@ function updateTransform() {
         prevSwipeItem.style["-moz-transform"] = styleValue;
         prevSwipeItem.style["-ms-transform"] = styleValue;
         prevSwipeItem.style["-o-transform"] = styleValue;*/
-        prevSwipeItem.style["transform"] = styleValue;
-        if ( animationInProgress) {
-            styleValue = ANIMATION;
-            /*prevSwipeItem.style["-webkit-transition"] = "-webkit-" + styleValue;
-            prevSwipeItem.style["-moz-transition"] = "-moz-" + styleValue;
-            prevSwipeItem.style["-ms-transition"] = "-ms-" + styleValue;
-            prevSwipeItem.style["-o-transition"] = "-o-" + styleValue;*/
-            prevSwipeItem.style["transition"] = styleValue;
-        }
+        prevSwipeItem.style.transform = styleValue;
     }
 
     styleValue = "translateX(" + offset.x + "px) translateY(" + offset.y + "px)";
@@ -191,15 +212,7 @@ function updateTransform() {
     curSwipeItem.style["-moz-transform"] = styleValue;
     curSwipeItem.style["-ms-transform"] = styleValue;
     curSwipeItem.style["-o-transform"] = styleValue;*/
-    curSwipeItem.style["transform"] = styleValue;
-    if ( animationInProgress) {
-        styleValue = ANIMATION;
-        /*curSwipeItem.style["-webkit-transition"] = "-webkit-" + styleValue;
-        curSwipeItem.style["-moz-transition"] = "-moz-" + styleValue;
-        curSwipeItem.style["-ms-transition"] = "-ms-" + styleValue;
-        curSwipeItem.style["-o-transition"] = "-o-" + styleValue;*/
-        curSwipeItem.style["transition"] = styleValue;
-    }
+    curSwipeItem.style.transform = styleValue;
 
     if ( nextSwipeItem !== null) {
         styleValue = "translateX(" + (offset.x + itemWidth) + "px) translateY(" + offset.y + "px)";
@@ -207,15 +220,7 @@ function updateTransform() {
         nextSwipeItem.style["-moz-transform"] = styleValue;
         nextSwipeItem.style["-ms-transform"] = styleValue;
         nextSwipeItem.style["-o-transform"] = styleValue;*/
-        nextSwipeItem.style["transform"] = styleValue;
-        if ( animationInProgress) {
-            styleValue = ANIMATION;
-            /*nextSwipeItem.style["-webkit-transition"] = "-webkit-" + styleValue;
-            nextSwipeItem.style["-moz-transition"] = "-moz-" + styleValue;
-            nextSwipeItem.style["-ms-transition"] = "-ms-" + styleValue;
-            nextSwipeItem.style["-o-transition"] = "-o-" + styleValue;*/
-            nextSwipeItem.style["transition"] = styleValue;
-        }
+        nextSwipeItem.style.transform = styleValue;
     }
 
     requestMade = false;
