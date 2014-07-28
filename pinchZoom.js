@@ -34,25 +34,28 @@ var container = document.getElementById("SwipeSet");
 
 
 function onPan( event) {
-
-    offset.x += event.deltaX - lastTouch.x;
-    lastTouch.x = event.deltaX;
-    requestUpdate();
+    setTimeout( function( event){
+        offset.x += event.deltaX - lastTouch.x;
+        lastTouch.x = event.deltaX;
+        requestUpdate()
+    },0, event);
 }
 
 function onPanEnd( event) {
-    lastTouch.x = 0;
-    if ( Math.abs( event.deltaX) > (PANTHRESHOLD*itemWidth) || Math.abs( event.velocityX) > VELTHRESHOLD) {
-        if ( event.direction & Hammer.DIRECTION_LEFT) {
-            requestNextItem();
-            return;
-        } else if (event.direction & Hammer.DIRECTION_RIGHT) {
-            requestPrevItem();
-            return;
+    setTimeout( function(event) {
+        lastTouch.x = 0;
+        if ( Math.abs( event.deltaX) > (PANTHRESHOLD*itemWidth) || Math.abs( event.velocityX) > VELTHRESHOLD) {
+            if ( event.direction & Hammer.DIRECTION_LEFT) {
+                requestNextItem();
+                return;
+            } else if (event.direction & Hammer.DIRECTION_RIGHT) {
+                requestPrevItem();
+                return;
+            }
         }
-    }
-    offset.x = 0;
-    animateTransition();
+        offset.x = 0;
+        animateTransition();
+    },0,event);
 }
 
 function onPinch( event) {
