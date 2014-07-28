@@ -68,8 +68,8 @@ function onPinch( event) {
     lastTouch.scale = event.scale;
 
     scale *= scaleFactor;
-    offset.x += (scaleFactor - 1) * (event.center.x + offset.x) - (event.deltaX - lastTouch.x);
-    offset.y += (scaleFactor - 1) * (event.center.y + offset.y) - (event.deltaY - lastTouch.y);
+    offset.x += (scaleFactor - 1) * (offset.x - event.center.x ) + (event.deltaX - lastTouch.x);
+    offset.y += (scaleFactor - 1) * (offset.y - event.center.y ) + (event.deltaY - lastTouch.y);
 
     lastTouch.x = event.deltaX;
     lastTouch.y = event.deltaY;
@@ -260,7 +260,7 @@ function updateTransform() {
 }
 
 function updateScale() {
-    styleValue = "translateX(" + (-offset.x / scale) + "px) translateY(" + (-offset.y / scale) + "px) scale(" + scale + "," + scale + ")";
+    styleValue = "translateX(" + offset.x + "px) translateY(" + offset.y + "px) scale(" + scale + "," + scale + ")";
     /*curSwipeItem.style["-webkit-transform"] = styleValue;
     curSwipeItem.style["-moz-transform"] = styleValue;
     curSwipeItem.style["-ms-transform"] = styleValue;
