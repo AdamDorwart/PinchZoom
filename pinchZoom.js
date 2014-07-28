@@ -37,17 +37,14 @@ var container = document.getElementById("SwipeSet");
 
 function onPan( event) {
     if (scale == 1) {
-        setTimeout( function( event){
             offset.x += event.deltaX - lastTouch.x;
             lastTouch.x = event.deltaX;
-            requestUpdate()
-        },0, event);
+            requestUpdate();
     }
 }
 
 function onPanEnd( event) {
     if (scale == 1) {
-        setTimeout( function(event) {
             lastTouch.x = 0;
             if ( Math.abs( event.deltaX) > (PANTHRESHOLD*itemWidth) || Math.abs( event.velocityX) > VELTHRESHOLD) {
                 if ( event.direction & Hammer.DIRECTION_LEFT) {
@@ -60,7 +57,6 @@ function onPanEnd( event) {
             }
             offset.x = 0;
             animateTransition();
-        },0,event);
     }
 }
 
