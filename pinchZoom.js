@@ -200,7 +200,7 @@ function resize() {
 
 function setup( ) {
 
-    hammer = new Hammer.Manager(container, {touchAction: "pan-y"});
+    hammer = new Hammer.Manager(container, {touchAction: "auto"});
 
     hammer.add(new Hammer.Pan({ threshold: 0, pointers: 0 }));
     hammer.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith(hammer.get('pan'));
