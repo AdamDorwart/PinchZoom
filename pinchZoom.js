@@ -1,4 +1,4 @@
-var ANIMATION = "transform 300ms ease";
+var ANIMATION = "transform 250ms ease";
 var PANTHRESHOLD = .5;
 var VELTHRESHOLD = 0.65;
 
@@ -37,26 +37,26 @@ var container = document.getElementById("SwipeSet");
 
 function onPan( event) {
     if (scale == 1) {
-            offset.x += event.deltaX - lastTouch.x;
-            lastTouch.x = event.deltaX;
-            requestUpdate();
+        offset.x += event.deltaX - lastTouch.x;
+        lastTouch.x = event.deltaX;
+        requestUpdate();
     }
 }
 
 function onPanEnd( event) {
     if (scale == 1) {
-            lastTouch.x = 0;
-            if ( Math.abs( event.deltaX) > (PANTHRESHOLD*itemWidth) || Math.abs( event.velocityX) > VELTHRESHOLD) {
-                if ( event.direction & Hammer.DIRECTION_LEFT) {
-                    requestNextItem();
-                    return;
-                } else if (event.direction & Hammer.DIRECTION_RIGHT) {
-                    requestPrevItem();
-                    return;
-                }
+        lastTouch.x = 0;
+        if ( Math.abs( event.deltaX) > (PANTHRESHOLD*itemWidth) || Math.abs( event.velocityX) > VELTHRESHOLD) {
+            if ( event.direction & Hammer.DIRECTION_LEFT) {
+                requestNextItem();
+                return;
+            } else if (event.direction & Hammer.DIRECTION_RIGHT) {
+                requestPrevItem();
+                return;
             }
-            offset.x = 0;
-            animateTransition();
+        }
+        offset.x = 0;
+        animateTransition();
     }
 }
 
@@ -67,8 +67,8 @@ function onPinch( event) {
     lastTouch.scale = event.scale;
 
     scale *= scaleFactor;
-    offset.x += (scaleFactor - 1) * (event.center.x + offset.x) + (event.deltaX - lastTouch.x);
-    offset.y += (scaleFactor - 1) * (event.center.y + offset.y) + (event.deltaY - lastTouch.y);
+    offset.x -= (scaleFactor - 1) * (event.center.x + offset.x) - (event.deltaX - lastTouch.x);
+    offset.y -= (scaleFactor - 1) * (event.center.y + offset.y) - (event.deltaY - lastTouch.y);
 
     lastTouch.x = event.deltaX;
     lastTouch.y = event.deltaY;
@@ -112,10 +112,8 @@ function requestPrevItem() {
 
 function animateTransition() {
     updateTransition();
-    if (!animationInProgress) {
-        animationInProgress = true;
-        requestUpdate();
-    }
+    animationInProgress = true;
+    requestUpdate( true);
 }
 
 function updateTransition() {
@@ -259,7 +257,7 @@ function updateTransform() {
 }
 
 function updateScale() {
-    styleValue = "translateX(" + offset.x + "px) translateY(" + offset.y + "px) scale(" + scale + "," + scale + ")";
+    styleValue = "translateX(" + offset.x / scale + "px) translateY(" + offset.y / scale + "px) scale(" + scale + "," + scale + ")";
     /*curSwipeItem.style["-webkit-transform"] = styleValue;
     curSwipeItem.style["-moz-transform"] = styleValue;
     curSwipeItem.style["-ms-transform"] = styleValue;
