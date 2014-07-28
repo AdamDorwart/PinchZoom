@@ -77,7 +77,7 @@ function onPinch( event) {
     lastTouch.x = event.deltaX;
     lastTouch.y = event.deltaY;
 
-    requestUpdate();
+    requestUpdate( false, updateScale);
 
 }
 
@@ -91,8 +91,7 @@ function onPinchEnd( event) {
     lastTouch.x = 0;
     lastTouch.y = 0;
     lastTouch.scale = 1;
-
-    requestUpdate();
+    requestUpdate( false, updateScale);
 }
 
 function requestNextItem() {
@@ -259,6 +258,17 @@ function updateTransform() {
         nextSwipeItem.style["-o-transform"] = styleValue;*/
         nextSwipeItem.style.transform = styleValue;
     }
+
+    requestMade = false;
+}
+
+function updateScale() {
+    styleValue = "translateX(" + offset.x + "px) translateY(" + offset.y + "px) scale(" + scale + "," + scale + ")";
+    /*curSwipeItem.style["-webkit-transform"] = styleValue;
+    curSwipeItem.style["-moz-transform"] = styleValue;
+    curSwipeItem.style["-ms-transform"] = styleValue;
+    curSwipeItem.style["-o-transform"] = styleValue;*/
+    curSwipeItem.style.transform = styleValue;
 
     requestMade = false;
 }
