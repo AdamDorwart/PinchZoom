@@ -67,18 +67,17 @@ function onPanEnd( event) {
 
 function onPinch( event) {
     event.preventDefault();
-    setTimeout( function(event) {
-        var scaleFactor = event.scale / lastTouch.scale;
-        lastTouch.scale = event.scale;
+    var scaleFactor = event.scale / lastTouch.scale;
+    lastTouch.scale = event.scale;
 
-        scale *= scaleFactor;
-        offset.x += (scaleFactor - 1) * (event.center.x + offset.x) + (event.deltaX - lastTouch.x);
-        offset.y += (scaleFactor - 1) * (event.center.y + offset.y) + (event.deltaY - lastTouch.y);
+    scale *= scaleFactor;
+    offset.x += (scaleFactor - 1) * (event.center.x + offset.x) + (event.deltaX - lastTouch.x);
+    offset.y += (scaleFactor - 1) * (event.center.y + offset.y) + (event.deltaY - lastTouch.y);
 
-        lastTouch.x = event.deltaX;
-        lastTouch.y = event.deltaY;
-        requestUpdate();
-    },0,event);
+    lastTouch.x = event.deltaX;
+    lastTouch.y = event.deltaY;
+
+    requestUpdate();
 
 }
 
@@ -92,6 +91,8 @@ function onPinchEnd( event) {
     lastTouch.x = 0;
     lastTouch.y = 0;
     lastTouch.scale = 1;
+
+    requestUpdate();
 }
 
 function requestNextItem() {
