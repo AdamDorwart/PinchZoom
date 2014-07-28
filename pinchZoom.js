@@ -29,7 +29,7 @@ totalItems = swipeItems.length;
 
 var prevSwipeItem = null;
 var curSwipeItem = swipeItems[curItem];
-var curItemImg = curSwipeItem.childNodes[0];
+var curItemImg = curSwipeItem.childNodes[1].childNodes[1];
 var nextSwipeItem = swipeItems[curItem+1];
 
 var hammer;
@@ -166,7 +166,7 @@ function transitionEnd() {
     if ( curSwipeItem !== swipeItems[curItem]) {
         prevSwipeItem = (curItem > 0) ? swipeItems[curItem-1] : null;
         curSwipeItem = swipeItems[curItem];
-        curItemImg = curSwipeItem.childNodes[0];
+        curItemImg = curSwipeItem.childNodes[1].childNodes[1];
         nextSwipeItem = (curItem < totalItems - 1) ? swipeItems[curItem+1] : null;
         offset.x = 0;
     }
