@@ -29,6 +29,7 @@ totalItems = swipeItems.length;
 
 var prevSwipeItem = null;
 var curSwipeItem = swipeItems[curItem];
+var curItemImg = curSwipeItem.childNodes[0];
 var nextSwipeItem = swipeItems[curItem+1];
 
 var hammer;
@@ -67,8 +68,8 @@ function onPinch( event) {
     lastTouch.scale = event.scale;
 
     scale *= scaleFactor;
-    offset.x += (scaleFactor - 1) * (event.center.x + offset.x);
-    offset.y += (scaleFactor - 1) * (event.center.y + offset.y);
+    offset.x += (scaleFactor - 1) * (event.center.x + offset.x) - (event.deltaX - lastTouch.x);
+    offset.y += (scaleFactor - 1) * (event.center.y + offset.y) - (event.deltaY - lastTouch.y);
 
     lastTouch.x = event.deltaX;
     lastTouch.y = event.deltaY;
@@ -165,6 +166,7 @@ function transitionEnd() {
     if ( curSwipeItem !== swipeItems[curItem]) {
         prevSwipeItem = (curItem > 0) ? swipeItems[curItem-1] : null;
         curSwipeItem = swipeItems[curItem];
+        curItemImg = curSwipeItem.childNodes[0];
         nextSwipeItem = (curItem < totalItems - 1) ? swipeItems[curItem+1] : null;
         offset.x = 0;
     }
@@ -262,7 +264,7 @@ function updateScale() {
     curSwipeItem.style["-moz-transform"] = styleValue;
     curSwipeItem.style["-ms-transform"] = styleValue;
     curSwipeItem.style["-o-transform"] = styleValue;*/
-    curSwipeItem.style.transform = styleValue;
+    curItemImg.style.transform = styleValue;
 
     requestMade = false;
 }
