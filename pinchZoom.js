@@ -23,7 +23,6 @@ var offset = {
     y: 0
 }
 var scale = 1;
-var zoomMode = false;
 
 var swipeItems = document.getElementsByClassName("swipe-item");
 totalItems = swipeItems.length;
@@ -37,7 +36,7 @@ var container = document.getElementById("SwipeSet");
 
 
 function onPan( event) {
-    if (!zoomMode) {
+    if (scale !== 1) {
         setTimeout( function( event){
             offset.x += event.deltaX - lastTouch.x;
             lastTouch.x = event.deltaX;
@@ -47,7 +46,7 @@ function onPan( event) {
 }
 
 function onPanEnd( event) {
-    if (!zoomMode) {
+    if (scale !== 1) {
         setTimeout( function(event) {
             lastTouch.x = 0;
             if ( Math.abs( event.deltaX) > (PANTHRESHOLD*itemWidth) || Math.abs( event.velocityX) > VELTHRESHOLD) {
@@ -67,9 +66,6 @@ function onPanEnd( event) {
 
 
 function onPinch( event) {
-    if (!zoomMode) {
-        zoomMode = true;
-    }
     setTimeout( function(event) {
         var scaleFactor = event.scale / lastTouch.scale;
         lastTouch.scale = event.scale;
@@ -86,6 +82,11 @@ function onPinch( event) {
 
 function onPinchEnd( event) {
     zoomMode = false;
+    if (scale < 1) {
+        scale = 1;
+        offset.x = 0;
+        offset.y = 0;
+    }
     lastTouch.x = 0;
     lastTouch.y = 0;
     lastTouch.scale = 1;
@@ -200,7 +201,7 @@ function resize() {
 
 function setup( ) {
 
-    hammer = new Hammer.Manager(container, {touchAction: "auto"});
+    hammer = new Hammer.Manager(container, {touchAction: "pan-x pan-y"});
 
     hammer.add(new Hammer.Pan({ threshold: 0, pointers: 0 }));
     hammer.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith(hammer.get('pan'));
