@@ -84,7 +84,7 @@ function onPinchEnd( event) {
         scale = 1;
         offset.x = 0;
         offset.y = 0;
-        curItemImg.style.position = "relative";
+        //curItemImg.style.position = "relative";
     }
     lastTouch.x = 0;
     lastTouch.y = 0;
@@ -266,7 +266,7 @@ function updateScale() {
     curSwipeItem.style["-ms-transform"] = styleValue;
     curSwipeItem.style["-o-transform"] = styleValue;*/
     curItemImg.style.transform = styleValue;
-    curItemImg.style.position = "absolute";
+    //curItemImg.style.position = "absolute";
 
     requestMade = false;
 }
