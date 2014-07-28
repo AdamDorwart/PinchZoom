@@ -67,6 +67,7 @@ function onPanEnd( event) {
 
 function onPinch( event) {
     event.preventDefault();
+    setTimeout( function(event) {
         var scaleFactor = event.scale / lastTouch.scale;
         lastTouch.scale = event.scale;
 
@@ -76,6 +77,8 @@ function onPinch( event) {
 
         lastTouch.x = event.deltaX;
         lastTouch.y = event.deltaY;
+        requestUpdate();
+    },0,event);
 
 }
 
