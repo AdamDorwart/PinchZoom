@@ -2,78 +2,98 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
-    <title>Hammer.js</title>
+    <title>PinchZoom</title>
 
     <style>
-        *, *:after, *:before {
-            box-sizing: border-box;
-            -moz-box-sizing: border-box;
+        @mixin vertical-align {
+
         }
 
         html, body {
             margin: 0;
             padding: 0;
-            height: 100%;
-            min-height: 100%;
-            background: #eee;
-            font: 13px/1.5em 'Open Sans', Helvetica, Arial, sans-serif;
+            max-width: 100vw;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background: black;
         }
 
-        a {
-            color: #4986e7;
+        p {
+            color: white;
         }
 
-        .bg1, .green { background: #42d692; }
-        .bg2, .blue { background: #4986e7; }
-        .bg3, .red { background: #d06b64; }
-        .bg4, .purple { background: #cd74e6; }
-        .bg5, .azure { background: #9fe1e7; }
-
-        body {
-            margin: 20px;
-        }
-
-        pre {
-            background: #fff;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .clear { clear: both; }
-
-
-        html, body {
-            overflow: hidden;
+        #SwipeSet {
             margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+
+            -webkit-user-drag: none;
+            user-drag: none;
+
+            cursor: hand;
+            cursor: -moz-grab;
+            cursor: -webkit-grab;
         }
 
-        .animate {
-            -webkit-transition: all .3s;
-            -moz-transition: all .3s;
-            transition: all .3s;
+        #SwipeSet img {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+
+            /*Horz align*/
+            margin-left: auto;
+            margin-right: auto;
+
+            /*Vert align*/
+            position: relative;
+            top: 50%;
+            -webkit-transform: translateY(-50%);
+            -ms-transform: translateY(-50%);
+            transform: translateY(-50%);
         }
 
-        #hit {
-            padding: 10px;
-        }
-
-        #log {
+        .swipe-item {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
             position: absolute;
-            padding: 10px;
         }
 
     </style>
 </head>
 <body>
+    <div id="SwipeSet">
+        <span class="swipe-item">
+            <img src="./img/light/1.jpg" alt="" draggable="false">
+        </span>
+        <span class="swipe-item">
+            <img src="./img/light/2.jpg" alt="" draggable="false">
+        </span>
+        <span class="swipe-item">
+            <img src="./img/light/3.jpg" alt="" draggable="false">
+        </span>
+        <!--
+        <span class="swipe-item">
+            <img src="./img/4.jpg" alt="" draggable="false">
+        </span>
+        <span class="swipe-item">
+            <img src="./img/5.jpg" alt="" draggable="false">
+        </span>
+        -->
+    </div>
 
-<div id="log"></div>
-<div id="hit"style="background: #42d692; width: 150px; height: 150px;"></div>
+    <div id="InfoPane">
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vitae pretium metus. Vivamus gravida sem non tellus placerat eleifend ut sed magna. Aenean elementum felis semper, vulputate tellus ac, lobortis augue. Vivamus vel mauris sodales, sollicitudin augue vitae, dictum purus. Pellentesque consequat lectus ac sem luctus laoreet. Nullam iaculis venenatis iaculis. Phasellus sodales vulputate libero ac mattis. Aliquam diam massa, eleifend ac sapien vel, feugiat hendrerit purus. Aliquam erat volutpat.</p>
 
+        <p>Sed faucibus magna ut tellus aliquam, malesuada hendrerit diam convallis. Curabitur eget luctus est. Etiam laoreet leo quis arcu pulvinar, quis facilisis odio laoreet. Pellentesque tristique nunc quis nulla sollicitudin blandit. Nunc nibh augue, tempor ac nibh sit amet, placerat elementum leo. Proin vitae porta nunc. Proin consectetur vel purus ut rhoncus. Donec enim diam, dignissim in ipsum sit amet, pulvinar dictum dui. In pulvinar arcu sit amet neque pulvinar mollis. Donec faucibus egestas gravida. Sed laoreet turpis ac est viverra bibendum. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse vitae metus vitae nunc fermentum eleifend id eget purus. Nulla eu condimentum arcu. Aenean et venenatis purus. Quisque sed iaculis sem.</p>
+    </div>
 
     <script src="./hammerjs/hammer.js"></script>
     <script src="./pinchZoom.js"></script>
